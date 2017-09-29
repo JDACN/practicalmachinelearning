@@ -136,7 +136,7 @@ modFit <- train(classe ~., method="rf", data=training, trControl=trainControl(me
 trainingPred <- predict(modFit, training)
 confusionMatrix(trainingPred, training$classe)
 ```
-The Training Model looks good with 
+The Training Model looks good with with very high accuracy ! 
 ### Check accuracy on validation set
 
 ```{r}
@@ -144,3 +144,21 @@ cvPred <- predict(modFit, crossValidation)
 confusionMatrix(cvPred, crossValidation$classe)
 ```
 
+
+
+```{r}
+cvPred <- predict(modFit, crossValidation)
+confusionMatrix(cvPred, crossValidation$classe)
+```
+
+The Model looks good with high accuracy nearly 99% with approx 0% sample error on validation dataset too.  Thus we can conclude this model.
+
+# Result
+
+As our model looks good, Now testing the Predictions on the real testing set.
+
+```{r}
+testingPred <- predict(modFit, testLess1)
+testingPred
+
+```

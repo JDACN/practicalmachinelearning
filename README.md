@@ -193,7 +193,8 @@ confusionMatrix(trainingPred, training$classe)
 ## Detection Prevalence   0.2843   0.1935   0.1744   0.1639   0.1838
 ## Balanced Accuracy      1.0000   1.0000   1.0000   1.0000   1.0000
 ```
-### check accuracy on validation set
+The Training Model looks good with with very high accuracy ! 
+### Check accuracy on validation set
 
 
 ```r
@@ -206,32 +207,90 @@ confusionMatrix(cvPred, crossValidation$classe)
 ## 
 ##           Reference
 ## Prediction    A    B    C    D    E
-##          A 2228   13    0    0    2
-##          B    4 1499   12    0    0
-##          C    0    6 1349   17    1
-##          D    0    0    7 1267    4
-##          E    0    0    0    2 1435
+##          A 2228    7    0    0    0
+##          B    3 1499   11    0    0
+##          C    0   12 1347   13    0
+##          D    0    0   10 1272    4
+##          E    1    0    0    1 1438
 ## 
 ## Overall Statistics
-##                                          
-##                Accuracy : 0.9913         
-##                  95% CI : (0.989, 0.9933)
-##     No Information Rate : 0.2845         
-##     P-Value [Acc > NIR] : < 2.2e-16      
-##                                          
-##                   Kappa : 0.989          
-##  Mcnemar's Test P-Value : NA             
+##                                           
+##                Accuracy : 0.9921          
+##                  95% CI : (0.9899, 0.9939)
+##     No Information Rate : 0.2845          
+##     P-Value [Acc > NIR] : < 2.2e-16       
+##                                           
+##                   Kappa : 0.99            
+##  Mcnemar's Test P-Value : NA              
 ## 
 ## Statistics by Class:
 ## 
 ##                      Class: A Class: B Class: C Class: D Class: E
-## Sensitivity            0.9982   0.9875   0.9861   0.9852   0.9951
-## Specificity            0.9973   0.9975   0.9963   0.9983   0.9997
-## Pos Pred Value         0.9933   0.9894   0.9825   0.9914   0.9986
-## Neg Pred Value         0.9993   0.9970   0.9971   0.9971   0.9989
+## Sensitivity            0.9982   0.9875   0.9846   0.9891   0.9972
+## Specificity            0.9988   0.9978   0.9961   0.9979   0.9997
+## Pos Pred Value         0.9969   0.9907   0.9818   0.9891   0.9986
+## Neg Pred Value         0.9993   0.9970   0.9968   0.9979   0.9994
 ## Prevalence             0.2845   0.1935   0.1744   0.1639   0.1838
-## Detection Rate         0.2840   0.1911   0.1719   0.1615   0.1829
-## Detection Prevalence   0.2859   0.1931   0.1750   0.1629   0.1832
-## Balanced Accuracy      0.9978   0.9925   0.9912   0.9918   0.9974
+## Detection Rate         0.2840   0.1911   0.1717   0.1621   0.1833
+## Detection Prevalence   0.2849   0.1928   0.1749   0.1639   0.1835
+## Balanced Accuracy      0.9985   0.9926   0.9904   0.9935   0.9985
 ```
 
+
+
+
+```r
+cvPred <- predict(modFit, crossValidation)
+confusionMatrix(cvPred, crossValidation$classe)
+```
+
+```
+## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction    A    B    C    D    E
+##          A 2228    7    0    0    0
+##          B    3 1499   11    0    0
+##          C    0   12 1347   13    0
+##          D    0    0   10 1272    4
+##          E    1    0    0    1 1438
+## 
+## Overall Statistics
+##                                           
+##                Accuracy : 0.9921          
+##                  95% CI : (0.9899, 0.9939)
+##     No Information Rate : 0.2845          
+##     P-Value [Acc > NIR] : < 2.2e-16       
+##                                           
+##                   Kappa : 0.99            
+##  Mcnemar's Test P-Value : NA              
+## 
+## Statistics by Class:
+## 
+##                      Class: A Class: B Class: C Class: D Class: E
+## Sensitivity            0.9982   0.9875   0.9846   0.9891   0.9972
+## Specificity            0.9988   0.9978   0.9961   0.9979   0.9997
+## Pos Pred Value         0.9969   0.9907   0.9818   0.9891   0.9986
+## Neg Pred Value         0.9993   0.9970   0.9968   0.9979   0.9994
+## Prevalence             0.2845   0.1935   0.1744   0.1639   0.1838
+## Detection Rate         0.2840   0.1911   0.1717   0.1621   0.1833
+## Detection Prevalence   0.2849   0.1928   0.1749   0.1639   0.1835
+## Balanced Accuracy      0.9985   0.9926   0.9904   0.9935   0.9985
+```
+
+The Model looks good with high accuracy nearly 99% with approx 0% sample error on validation dataset too.  Thus we can conclude this model.
+
+# Result
+
+As our model looks good, Now testing the Predictions on the real testing set.
+
+
+```r
+testingPred <- predict(modFit, testLess1)
+testingPred
+```
+
+```
+##  [1] B A B A A E D B A A B C B A E E A B B B
+## Levels: A B C D E
+```
