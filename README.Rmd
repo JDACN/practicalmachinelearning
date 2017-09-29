@@ -13,7 +13,7 @@ Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible t
 
 ## Executive Summary
 
-Based on the [groupware site](http://groupware.les.inf.puc-rio.br/har) , The **Weight Lifting Exercises Dataset** contains data for Six young health participants were asked to perform one set of 10 repetitions of the Unilateral Dumbbell Biceps Curl in five different fashions. The Results are need to be categorised in Classes like below.
+Based on the [groupware site](http://groupware.les.inf.puc-rio.br/har) , The **Weight Lifting Exercises Dataset** contains data for Six young health participants who were asked to perform one set of 10 repetitions of the Unilateral Dumbbell Biceps Curl in five different fashions. The Results are need to be categorised in Classes like below.
 
 
 * CLASS A     | Exactly according to the specification
@@ -64,33 +64,83 @@ Process data to remove invalid predictors as well as reduce the number of predic
 ```{r}
 # Remove columns with Near Zero Values
 subTrain <-  training[, names(training)[!(nzv(training, saveMetrics = T)[, 4])]]
+subTest <-  testing[, names(testing)[!(nzv(testing, saveMetrics = T)[, 4])]]
 
 # Remove all columns which contains only NA
 subTrain <- subTrain[ , colSums(is.na(subTrain)) == 0]
+subTest <-  subTest[ , colSums(is.na(subTest)) == 0]
 
 # Remove columns which may be not useful and may result invalid prediction
 ## head(subTrain)
 ## First column looks serial number, also column 5 looks timestamp.
-subTrain <- subTrain[ , c(-1,-5)]
+#subTrain <- subTrain[ , c(-1,-5)]
+
+dim(subTrain)
+
 
 ```
+
+After intial cleaning of data we have now 59 variables.
 
 ## Machine Learning
 Following steps are performed to do Machine learning.
 
+### Preprocessing variables
+Preprocess the variables to remove the variables with values near zero after variable processing, that means that they have not so much meaning in the predictions. (This is needed to save time in model building and improve the correctness )
+
+```{r}
+# get all columns which are numeric and useful for predictions
+v <- which(lapply(subTrain, class) %in% "numeric")
+
+# Preprocess the variables
+preObj <-preProcess(subTrain[,v],method=c('knnImpute', 'center', 'scale'))
+
+# Predict best fit variables 
+trainLess1 <- predict(preObj, subTrain[,v])
+# add the classes for training model.
+trainLess1$classe <- subTrain$classe
+
+# Prepare Test Data
+testLess1 <-predict(preObj, subTest[,v])
+
+# Remove unwanted columns
+
+nzv <- nearZeroVar(trainLess1,saveMetrics=TRUE)
+trainLess1 <- trainLess1[,nzv$nzv==FALSE]
+
+nzv <- nearZeroVar(testLess1,saveMetrics=TRUE)
+testLess1 <- testLess1[,nzv$nzv==FALSE]
+
+dim(trainLess1 )
+```
 ### Create cross validation sets 
 The training set is divided in two parts, one for training and the other for cross validation of our model.
 ```{r}
-inTrain <- createDataPartition(subTrain$classe, p = 0.6, list = FALSE)
-subTraining <- subTrain[inTrain,]
-subValidation <- subTrain[-inTrain,]
+inTrain = createDataPartition(trainLess1$classe, p = 0.6, list=FALSE)
+training = trainLess1[inTrain,]
+crossValidation = trainLess1[-inTrain,]
 
 ```
 
 ### Train model
-Train model with random forest due to its highly accuracy rate. The model is build on a training set of 28 variables from the initial 160. Cross validation is used as train control method.
+Train model with random forest due to its highly accuracy rate. The model is build on a training set of 27 variables from the initial 160. Cross validation is used as train control method.
 ```{r}
 
+modFit <- train(classe ~., method="rf", data=training, trControl=trainControl(method='cv'), number=5, allowParallel=TRUE )
 
+```
+
+### Check accuracy on training set
+
+```{r}
+trainingPred <- predict(modFit, training)
+confusionMatrix(trainingPred, training$classe)
+```
+The Training Model looks good with 
+### Check accuracy on validation set
+
+```{r}
+cvPred <- predict(modFit, crossValidation)
+confusionMatrix(cvPred, crossValidation$classe)
 ```
 
