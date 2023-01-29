@@ -1,4 +1,4 @@
-# Corsera : Practical Machine Learning Project
+# Practical Machine Learning Project
 Jayant Dhawale  
 September 29, 2017  
 
